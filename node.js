@@ -1,6 +1,7 @@
 const axios = require("axios");
 const tf = require("@tensorflow/tfjs-node");
 const nsfw = require("nsfwjs");
+
 module.exports = function (RED) {
     function FunctionNode(n) {
         RED.nodes.createNode(this, n);
@@ -9,11 +10,11 @@ module.exports = function (RED) {
         for (var key in n) {
             node[key] = n[key] || "";
         }
-        var model;
-        async function load_fn() {
-            model = await nsfw.load() // To load a local model, nsfw.load('file://./path/to/model/')
-        }
-        load_fn();
+        // var model;
+        // async function load_fn() {
+        //     model = await nsfw.load() // To load a local model, nsfw.load('file://./path/to/model/')
+        // }
+        // load_fn();
         this.on('input', function (msg) {
             for (var i in msg) {
                 if (i !== 'req' | i !== 'res' | i !== 'payload' | i !== 'send' | i !== '_msgid') {
@@ -22,6 +23,7 @@ module.exports = function (RED) {
             }
 
             async function fn() {
+                const model = await nsfw.load() // To load a local model, nsfw.load('file://./path/to/model/')
                 const pic = await axios.get(node.url, {
                     responseType: 'arraybuffer',
                 })
@@ -39,5 +41,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("nsfwjs", FunctionNode);
+    RED.nodes.registerType("nsfw", FunctionNode);
 };
